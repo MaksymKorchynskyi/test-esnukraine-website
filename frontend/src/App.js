@@ -74,23 +74,21 @@ const mainStyle = {
 };
 
 function App() {
-  // 1. Створюємо стан мови тут, у головному файлі
   const [language, setLanguage] = useState('uk'); 
 
   return (
     <LanguageProvider>
       <style>{globalStyles}</style>
-      <Router>
+      
+      {/* 👇 ОСЬ ТУТ ГОЛОВНА ЗМІНА 👇 */}
+      <Router basename="/test-esnukraine-website">
+        
         <div style={appStyle}>
-          {/* 2. Передаємо мову та функцію її зміни у Хідер */}
           <Header language={language} changeLanguage={setLanguage} />
           
           <main style={mainStyle}>
             <Routes>
-              {/* 3. Передаємо мову у Home, щоб вона оновилася миттєво */}
               <Route path="/" element={<Home language={language} />} />
-              
-              {/* Для інших сторінок теж можна передати, якщо ти переробив їх під props */}
               <Route path="/about" element={<About />} />
               <Route path="/sections" element={<Sections />} />
               <Route path="/news" element={<News />} />
@@ -99,7 +97,10 @@ function App() {
           </main>
           <Footer />
         </div>
+        
       </Router>
+      {/* 👆 КІНЕЦЬ ROUTER 👆 */}
+      
     </LanguageProvider>
   );
 }

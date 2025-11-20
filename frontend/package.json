@@ -15,7 +15,7 @@
     "web-vitals": "^2.1.4"
   },
 
-  "homepage": "https://maksymkorchynskyi.github.io/test-esnukraine-website/",
+  "homepage": "https://maksymkorchynskyi.github.io/test-esnukraine-website",
 "scripts": {
   "start": "react-scripts start",
   "predeploy": "npm run build",

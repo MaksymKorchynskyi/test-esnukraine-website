@@ -3,21 +3,21 @@ import React from 'react';
 import { useLanguage } from '../LanguageContext';
 
 const Sections = () => {
-  const { t, language } = useLanguage();
+  const { language } = useLanguage();
 
   const sections = [
     {
       id: 'kyiv',
       title: 'ESN Kyiv',
       description: 'ESN Kyiv became an official member of the Erasmus Student Network on June 2, 2019. They celebrate their birthday on September 23, marking their registration as a candidate section in 2018.',
-      image: '/images/ua-kyiv-logo-colour.svg',
+      image: process.env.PUBLIC_URL + '/images/ua-kyiv-logo-colour.svg',
       buttonText: language === 'uk' ? 'Дізнатися більше' : 'Learn More'
     },
     {
       id: 'chernivtsi',
       title: 'ESN Chernivtsi',
       description: 'ESN Chernivtsi was founded by representatives from the Student Parliament of Yuriy Fedkovych Chernivtsi National University and the Bukovinian State Medical University. It became an official section during the Autumn General Assembly 2021.',
-      image: '/images/esn_chernivtsi_logo.png',
+      image: process.env.PUBLIC_URL + '/images/esn_chernivtsi_logo.png',
       buttonText: language === 'uk' ? 'Дізнатися більше' : 'Learn More'
     },
     {
@@ -233,22 +233,23 @@ const Sections = () => {
               }}
             >
               <div style={imageContainerStyle}>
-                {section.image ? (
-                  <img 
-                    src={section.image} 
-                    alt={section.title}
-                    style={isLogoImage(section.image) ? logoImageStyle : imageStyle}
-                    onError={(e) => {
-                      e.target.style.display = 'none';
-                      e.target.nextSibling.style.display = 'flex';
-                    }}
-                  />
-                ) : (
-                  <div style={placeholderStyle}>
-                    {section.title} Photo
-                  </div>
-                )}
-              </div>
+              {section.image ? (
+                <img 
+                  src={section.image} 
+                  alt={section.title}
+                  style={isLogoImage(section.image) ? logoImageStyle : imageStyle}
+                  onError={(e) => {
+                    e.target.onerror = null; // Запобігає зацикленню
+                    e.target.src = "https://placehold.co/400x300?text=ESN+Ukraine"; // ✅ Замінюємо на запасну картинку
+                    e.target.style.objectFit = "contain"; // Щоб заглушка виглядала гарно
+                  }}
+                />
+              ) : (
+                <div style={placeholderStyle}>
+                  {section.title} Photo
+                </div>
+              )}
+            </div>
               
               <div style={cardContentStyle}>
                 <h3 style={cardTitleStyle}>{section.title}</h3>

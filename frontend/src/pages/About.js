@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../LanguageContext';
 
 const About = () => {
-  const { t, language } = useLanguage();
+  const { language } = useLanguage();
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {

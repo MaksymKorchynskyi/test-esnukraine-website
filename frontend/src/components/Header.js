@@ -309,14 +309,13 @@ const Header = () => {
         <div style={containerStyle} className="container-mobile">
           <Link to="/" style={logoStyle} className="logo-container">
             <img 
-              src="/images/logo_esn_ukraine_main.png" 
+              src={process.env.PUBLIC_URL + '/images/logo_esn_ukraine_main.png'} alt="Logo"
               style={{ 
                 height: '71px', 
                 width: 'auto',
                 maxWidth: '230px',
                 objectFit: 'contain'
               }} 
-              alt="ESN Ukraine" 
               onError={(e) => {
                 console.error('Помилка завантаження логотипу:', e.target.src);
                 e.target.src = 'https://via.placeholder.com/220x70?text=ESN+Ukraine';
