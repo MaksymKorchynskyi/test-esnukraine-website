@@ -1,16 +1,34 @@
 // Header.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../LanguageContext';
+
 
 const Header = () => {
   const { language, changeLanguage, t } = useLanguage();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSectionsDropdownOpen, setIsSectionsDropdownOpen] = useState(false);
+  
+  // Стан для відстеження прокрутки
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      // Якщо прокрутили більше 0 пікселів, ховаємо смужку
+      if (window.scrollY > 0) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // --- СТИЛІ ---
 
-  // Кольорова смуга ESN (Залишається без змін)
+  // Кольорова смуга ESN
   const colorfulStripStyle = {
     background: 'repeating-linear-gradient(90deg, #00aeef, #00aeef 100px, #fff 0, #fff 100px, #ed008c 0, #ed008c 199px, #fff 0, #fff 200px, #7ac143 0, #7ac143 299px, #fff 0, #fff 300px, #f47b20 0, #f47b20 399px, #fff 0, #fff 400px, #2e3192 0, #2e3192 499px, #fff 0, #fff 500px)',
     height: '10px',
@@ -18,18 +36,24 @@ const Header = () => {
     position: 'fixed',
     top: 0,
     left: 0,
-    zIndex: 1002
+    zIndex: 1002,
+    // Логіка: ховаємо вгору при скролі
+    transform: isScrolled ? 'translateY(-100%)' : 'translateY(0)',
+    transition: 'none'
   };
 
   const navbarStyle = {
     background: '#f8f9fa',
     padding: '0.75rem 0',
     position: 'fixed',
-    top: '10px',
+    // Якщо скролимо, хедер стає на 0, інакше на 10px (або менше на мобільному, це керується CSS нижче, але тут логіка відступу)
+    // Важливо: на мобільному ми змінимо висоту смужки через CSS, тому top буде коригуватися візуально.
+    top: isScrolled ? '0' : '10px', 
     width: '100%',
     zIndex: 1001,
     boxShadow: '0 2px 15px rgba(0,0,0,0.1)',
-    borderBottom: '1px solid #e9ecef'
+    borderBottom: '1px solid #e9ecef',
+    transition: 'none'
   };
 
   const containerStyle = {
@@ -161,7 +185,7 @@ const Header = () => {
     display: 'none',
     background: 'transparent',
     border: 'none',
-    fontSize: '2.5rem', // Великий розмір для зручності
+    fontSize: '2.5rem', 
     cursor: 'pointer',
     color: '#212529',
     padding: '0.25rem',
@@ -177,7 +201,7 @@ const Header = () => {
     left: 0,
     width: '100%',
     height: '100vh',
-    background: '#f8f9fa', // ЗМІНЕНО: Фон тепер такий самий як у хедера (#f8f9fa)
+    background: '#f8f9fa', 
     zIndex: 2000,
     padding: '0',
     display: 'flex',
@@ -192,11 +216,11 @@ const Header = () => {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: '15px 20px',
+    padding: '10px 20px', // Зменшено padding (було 15px 20px)
     borderBottom: '1px solid #e9ecef',
-    background: '#f8f9fa', // ЗМІНЕНО: Фон хедера меню
-    marginTop: '10px',
-    minHeight: '85px'
+    background: '#f8f9fa',
+    marginTop: '5px', // Зменшено відступ (було 10px)
+    minHeight: '65px' // Зменшено висоту (було 85px), щоб було компактніше
   };
 
   const closeButtonStyle = {
@@ -226,12 +250,12 @@ const Header = () => {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    background: '#f8f9fa', // ЗМІНЕНО: Фон посилань
+    background: '#f8f9fa',
     transition: 'background 0.2s'
   };
 
   const mobileAccordionStyle = {
-    background: '#f1f3f5', // Трохи темніший для контрасту вкладеного меню
+    background: '#f1f3f5', 
     overflow: 'hidden',
     borderBottom: '1px solid #e9ecef'
   };
@@ -250,7 +274,7 @@ const Header = () => {
   const mobileLanguageContainerStyle = {
     padding: '2rem 1.5rem',
     marginTop: 'auto',
-    background: '#f8f9fa', // Фон контейнера
+    background: '#f8f9fa', 
     borderTop: '1px solid #e9ecef'
   };
 
@@ -279,11 +303,42 @@ const Header = () => {
       .desktop-nav { display: none !important; }
       .header-actions { display: none !important; }
       .mobile-menu-button { display: block !important; }
+      
+      /* Адаптивні відступи для контейнера */
       .logo-container { 
         margin-left: 0.5rem !important;
       }
       .container-mobile {
         padding: 0 0.5rem !important;
+      }
+
+      /* --- НОВІ СТИЛІ ДЛЯ КОМПАКТНОСТІ НА ТЕЛЕФОНАХ --- */
+      
+      /* Хедер на телефонах - середній розмір (не занадто малий) */
+      .main-header {
+        padding: 0.5rem 0 !important; /* Трохи збільшено (було 0.25rem) */
+      }
+      
+      /* Коригуємо позицію хедера */
+      .main-header:not([style*="top: 0"]) {
+        top: 6px !important; 
+      }
+
+      /* Логотип на телефонах - середній розмір */
+      .header-logo {
+        height: 60px !important; /* Трохи збільшено (було 45px) */
+        width: auto !important;
+      }
+
+      /* Кольорова смужка */
+      .colorful-strip {
+        height: 6px !important;
+      }
+
+      /* Іконка меню */
+      .mobile-menu-button svg {
+        width: 30px; /* Трохи збільшено для зручності */
+        height: 30px;
       }
     }
     
@@ -305,16 +360,21 @@ const Header = () => {
       {/* Кольорова смуга */}
       <div style={colorfulStripStyle} className="colorful-strip" />
       
-      <header style={navbarStyle}>
+      {/* Додано клас main-header для таргетування через CSS */}
+      <header style={navbarStyle} className="main-header">
         <div style={containerStyle} className="container-mobile">
           <Link to="/" style={logoStyle} className="logo-container">
+            {/* Додано клас header-logo для зміни розміру на мобільному */}
             <img 
-              src={process.env.PUBLIC_URL + '/images/logo_esn_ukraine_main.png'} alt="Logo"
+              src={process.env.PUBLIC_URL + '/images/logo_esn_ukraine_main.png'} 
+              alt="Logo"
+              className="header-logo"
               style={{ 
-                height: '71px', 
+                height: '75px', // Десктопний розмір за замовчуванням
                 width: 'auto',
                 maxWidth: '230px',
-                objectFit: 'contain'
+                objectFit: 'contain',
+                transition: 'height 0.3s ease'
               }} 
               onError={(e) => {
                 console.error('Помилка завантаження логотипу:', e.target.src);
@@ -474,11 +534,15 @@ const Header = () => {
                 onClick={() => setIsMobileMenuOpen(false)}
                 style={{ display: 'flex', alignItems: 'center' }}
              >
-               <img 
-                 src="/images/logo_esn_ukraine_main.png" 
-                 style={{ height: '71px', width: 'auto' }} 
-                 alt="ESN Ukraine" 
-               />
+              <img 
+              src={process.env.PUBLIC_URL + '/images/logo_esn_ukraine_main.png'} 
+              style={{ height: '55px', width: 'auto', objectFit: 'contain' }} // Зменшено з 55px до 45px
+              alt="ESN Ukraine" 
+              onError={(e) => {
+                e.target.onerror = null; 
+                e.target.src = "https://placehold.co/220x70?text=ESN+Ukraine";
+              }}
+            />
              </Link>
              <button style={closeButtonStyle} onClick={() => setIsMobileMenuOpen(false)}>
                ✕

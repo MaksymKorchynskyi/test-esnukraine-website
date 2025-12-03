@@ -1,12 +1,11 @@
-// News.js
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../LanguageContext';
 
 const News = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [news, setNews] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
+  const itemsPerPage = 6; // Grid layout: 6 items per page
 
   useEffect(() => {
     const baseNews = [
@@ -15,7 +14,7 @@ const News = () => {
         title: 'Welcome Week 2024 Successfully Started',
         date: 'September 15, 2023',
         categories: ['Event', 'Kyiv'],
-        image: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+        image: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
         excerpt: 'ESN Ukraine successfully launched the Welcome Week 2024 with over 300 international students participating in various orientation activities...',
       },
       {
@@ -23,7 +22,7 @@ const News = () => {
         title: 'New Partnership with Kyiv University',
         date: 'September 10, 2023',
         categories: ['Partnership', 'Education'],
-        image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+        image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
         excerpt: 'ESN Ukraine is proud to announce a new partnership with Taras Shevchenko National University of Kyiv to enhance support for international students...',
       },
       {
@@ -31,7 +30,7 @@ const News = () => {
         title: 'Cultural Exchange Festival 2023',
         date: 'August 28, 2023',
         categories: ['Festival', 'Culture'],
-        image: 'https://images.unsplash.com/photo-1559027615-cfa462850979?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+        image: 'https://images.unsplash.com/photo-1559027615-cfa462850979?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
         excerpt: 'Join us for the annual Cultural Exchange Festival featuring food, music, and traditions from around the world...',
       },
       {
@@ -39,7 +38,7 @@ const News = () => {
         title: 'Volunteer Program Expansion',
         date: 'August 15, 2023',
         categories: ['Volunteering'],
-        image: 'https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+        image: 'https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
         excerpt: 'ESN Ukraine is expanding its volunteer program to include more opportunities for local and international students...',
       },
       {
@@ -47,7 +46,7 @@ const News = () => {
         title: 'Erasmus Days 2023 Celebration',
         date: 'July 20, 2023',
         categories: ['Event', 'Erasmus+'],
-        image: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+        image: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
         excerpt: 'Celebrating the Erasmus+ program with a series of events across all our sections in Ukraine.',
       },
       {
@@ -55,7 +54,7 @@ const News = () => {
         title: 'Summer Camp in Carpathians',
         date: 'July 05, 2023',
         categories: ['Trip', 'Nature'],
-        image: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+        image: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
         excerpt: 'Our annual summer trip to the beautiful Carpathian mountains was a blast!',
       },
       {
@@ -63,7 +62,7 @@ const News = () => {
         title: 'Language Cafe: French Edition',
         date: 'June 15, 2023',
         categories: ['Education', 'Culture'],
-        image: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+        image: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
         excerpt: 'Practice your French skills with native speakers and enjoy croissants.',
       },
       {
@@ -71,7 +70,7 @@ const News = () => {
         title: 'City Quest: Hidden Kyiv',
         date: 'June 01, 2023',
         categories: ['Event', 'Kyiv'],
-        image: 'https://images.unsplash.com/photo-1519055548599-6d4d129508c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+        image: 'https://images.unsplash.com/photo-1519055548599-6d4d129508c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
         excerpt: 'Discover the secret spots of Kyiv in our interactive city quest game.',
       },
       {
@@ -79,7 +78,7 @@ const News = () => {
         title: 'International Dinner Night',
         date: 'May 20, 2023',
         categories: ['Food', 'Social'],
-        image: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+        image: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
         excerpt: 'Bring a dish from your country and share it with everyone!',
       },
       {
@@ -87,27 +86,19 @@ const News = () => {
         title: 'Movie Night Under the Stars',
         date: 'May 10, 2023',
         categories: ['Social', 'Relax'],
-        image: 'https://images.unsplash.com/photo-1485846234645-a62644f84728?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+        image: 'https://images.unsplash.com/photo-1485846234645-a62644f84728?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
         excerpt: 'Open-air movie screening in the botanical garden.',
-      },
-      {
-        id: 11,
-        title: 'Charity Run for Peace',
-        date: 'April 25, 2023',
-        categories: ['Sport', 'Charity'],
-        image: 'https://images.unsplash.com/photo-1452626038306-3a2a4a5b0259?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
-        excerpt: 'Run for a good cause and support local charities.',
-      },
-      {
-        id: 12,
-        title: 'Career Workshop with Alumni',
-        date: 'April 10, 2023',
-        categories: ['Career', 'Education'],
-        image: 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
-        excerpt: 'Learn how to boost your CV with your Erasmus experience.',
       }
     ];
     setNews(baseNews);
+  }, []);
+
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 900);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
   const indexOfLastNews = currentPage * itemsPerPage;
@@ -120,308 +111,289 @@ const News = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  // --- СТИЛІ ---
+
   const pageStyle = {
-    padding: '4rem 2rem 6rem',
-    background: '#F8FAFC',
+    padding: isMobile ? '3rem 1rem 6rem' : '5rem 2rem 8rem',
+    background: '#ffffff',
     minHeight: '100vh',
-    marginTop: '85px'
+    marginTop: '85px',
+    fontFamily: 'Open Sans, sans-serif'
   };
 
   const containerStyle = {
     maxWidth: '1200px',
-    margin: '0 auto'
+    margin: '0 auto',
+    width: '100%'
   };
 
-  const pageTitleStyle = {
-    fontSize: '3rem',
-    fontWeight: '700',
-    marginBottom: '1rem',
-    color: '#7ac143',
+  const headerStyle = {
     textAlign: 'center',
-    fontFamily: 'Montserrat, sans-serif'
+    marginBottom: isMobile ? '3rem' : '5rem'
+  };
+
+  // ЗАГОЛОВОК ЗЕЛЕНОГО КОЛЬОРУ (#7ac143)
+  const pageTitleStyle = {
+    fontSize: isMobile ? '2.5rem' : '3.5rem',
+    fontWeight: '800',
+    marginBottom: '1rem',
+    color: '#7ac143', // ESN Green
+    textAlign: 'center',
+    fontFamily: 'Montserrat, sans-serif',
+    letterSpacing: '-1px'
   };
 
   const pageSubtitleStyle = {
-    fontSize: '1.3rem',
-    color: '#64748B',
-    marginBottom: '4rem',
-    textAlign: 'center',
+    fontSize: isMobile ? '1.1rem' : '1.3rem',
+    color: '#6c757d',
     lineHeight: 1.6,
-    fontFamily: 'Open Sans, sans-serif'
+    maxWidth: '700px',
+    margin: '0 auto'
   };
 
-  const newsListStyle = {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '2.5rem',
-    marginBottom: '4rem'
+  // --- GRID LAYOUT ---
+  const newsGridStyle = {
+    display: 'grid',
+    gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fill, minmax(340px, 1fr))',
+    gap: isMobile ? '2rem' : '2.5rem',
+    marginBottom: '5rem'
   };
 
-  const newsItemStyle = {
+  const cardStyle = {
     background: '#ffffff',
-    borderRadius: '15px', // Трохи заокругленіше (як в Events)
+    borderRadius: '20px',
     overflow: 'hidden',
-    boxShadow: '0 5px 20px rgba(0, 0, 0, 0.05)', // Базова тінь як в Events
-    transition: 'all 0.3s ease',
-    display: 'flex',
-    alignItems: 'stretch',
-    minHeight: '250px',
-    cursor: 'pointer',
-    border: '1px solid rgba(0,0,0,0.05)' // Базова рамка як в Events
-  };
-
-  const newsImageStyle = {
-    width: '400px',
-    height: 'auto',
-    objectFit: 'cover',
-    flexShrink: 0
-  };
-
-  const newsContentStyle = {
-    padding: '2.5rem',
-    flex: 1,
+    boxShadow: '0 10px 40px rgba(0,0,0,0.06)',
+    transition: 'transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease',
+    border: '1px solid #f0f0f0',
     display: 'flex',
     flexDirection: 'column',
+    height: '100%',
     position: 'relative'
   };
 
-  const newsMetaStyle = {
-    display: 'flex',
-    gap: '0.8rem',
-    alignItems: 'center',
-    marginBottom: '1rem',
-    flexWrap: 'wrap'
+  const imageContainerStyle = {
+    width: '100%',
+    height: '240px',
+    overflow: 'hidden',
+    position: 'relative'
   };
 
-  const newsDateStyle = {
-    color: '#7ac143',
-    fontSize: '0.9rem',
-    fontWeight: '700', // Більш жирний, як в Events
-    fontFamily: 'Montserrat, sans-serif',
-    marginRight: '1rem'
+  const cardImageStyle = {
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
+    transition: 'transform 0.5s ease'
   };
 
-  // Фіксований стиль категорій
-  const newsCategoryStyle = {
-    background: '#7ac143',
-    color: '#ffffff',
-    padding: '0.3rem 1rem',
-    borderRadius: '20px',
+  const categoryTagStyle = {
+    position: 'absolute',
+    top: '15px',
+    right: '15px',
+    background: 'rgba(255, 255, 255, 0.95)',
+    color: '#2e3192',
+    padding: '6px 14px',
+    borderRadius: '30px',
     fontSize: '0.8rem',
-    fontWeight: '600',
+    fontWeight: '700',
     fontFamily: 'Montserrat, sans-serif',
-    display: 'inline-block', // Щоб поводились як блоки
-    minWidth: '80px', // Мінімальна ширина для однаковості (опціонально)
-    textAlign: 'center'
+    boxShadow: '0 4px 10px rgba(0,0,0,0.15)',
+    zIndex: 2
   };
 
-  const newsTitleStyle = {
-    color: '#2D3748',
-    marginBottom: '1rem',
-    fontSize: '1.8rem', // Збільшено як в Events
+  const cardContentStyle = {
+    padding: '2rem',
+    flex: 1,
+    display: 'flex',
+    flexDirection: 'column'
+  };
+
+  const dateStyle = {
+    color: '#7ac143', // Зелений акцент
+    fontSize: '0.9rem',
     fontWeight: '700',
-    lineHeight: 1.2,
+    fontFamily: 'Montserrat, sans-serif',
+    marginBottom: '0.8rem',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.5rem'
+  };
+
+  const titleStyle = {
+    fontSize: '1.4rem',
+    fontWeight: '700',
+    color: '#212529',
+    marginBottom: '1rem',
+    lineHeight: 1.3,
     fontFamily: 'Montserrat, sans-serif'
   };
 
-  const newsExcerptStyle = {
-    color: '#64748B',
-    marginBottom: '3rem',
+  const excerptStyle = {
+    fontSize: '1rem',
+    color: '#6c757d',
     lineHeight: 1.6,
-    fontSize: '1.05rem',
+    marginBottom: '2rem',
     flex: 1,
     fontFamily: 'Open Sans, sans-serif'
   };
 
-  const readMoreStyle = {
-    color: '#ffffff',
-    background: '#7ac143',
-    border: 'none',
-    padding: '0.8rem 1.5rem',
-    borderRadius: '8px',
+  const readMoreBtnStyle = {
+    alignSelf: 'flex-start',
+    background: 'transparent',
+    color: '#7ac143',
+    border: '2px solid #7ac143',
+    padding: '0.7rem 1.8rem',
+    borderRadius: '10px',
     fontWeight: '600',
+    fontSize: '0.95rem',
     cursor: 'pointer',
-    transition: 'all 0.3s ease',
-    fontSize: '0.9rem',
     fontFamily: 'Montserrat, sans-serif',
+    transition: 'all 0.3s ease',
     textDecoration: 'none',
-    display: 'inline-block',
-    position: 'absolute',
-    bottom: '2.5rem',
-    right: '2.5rem'
+    display: 'inline-block'
   };
 
   const paginationContainerStyle = {
     display: 'flex',
     justifyContent: 'center',
-    alignItems: 'center',
-    gap: '0.5rem',
+    gap: '0.8rem',
     marginTop: '2rem'
   };
 
-  const paginationButtonStyle = (isActive) => ({
-    width: '40px',
-    height: '40px',
+  const paginationBtnStyle = (isActive) => ({
+    width: '45px',
+    height: '45px',
+    borderRadius: '12px',
+    border: isActive ? 'none' : '2px solid #f0f0f0',
+    background: isActive ? '#7ac143' : '#ffffff',
+    color: isActive ? '#ffffff' : '#6c757d',
+    fontWeight: '700',
+    fontFamily: 'Montserrat, sans-serif',
+    cursor: 'pointer',
+    transition: 'all 0.2s ease',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: '8px',
-    border: isActive ? 'none' : '1px solid #e2e8f0',
-    background: isActive ? '#7ac143' : '#ffffff',
-    color: isActive ? '#ffffff' : '#64748B',
-    fontWeight: '600',
-    cursor: 'pointer',
-    transition: 'all 0.2s ease',
-    fontFamily: 'Montserrat, sans-serif'
+    fontSize: '1rem'
   });
 
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
-  const mobileStyles = {
-    pageStyle: {
-      padding: '6rem 1rem 2rem',
-      marginTop: '70px'
-    },
-    pageTitleStyle: {
-      fontSize: '2.2rem'
-    },
-    pageSubtitleStyle: {
-      fontSize: '1.1rem',
-      marginBottom: '3rem'
-    },
-    newsItemStyle: {
-      flexDirection: 'column',
-      minHeight: 'auto'
-    },
-    newsImageStyle: {
-      width: '100%',
-      height: '220px'
-    },
-    newsContentStyle: {
-      padding: '2rem'
-    },
-    newsTitleStyle: {
-      fontSize: '1.5rem'
-    },
-    newsExcerptStyle: {
-      fontSize: '1rem',
-      marginBottom: '2rem'
-    },
-    readMoreStyle: {
-      position: 'static',
-      alignSelf: 'flex-end',
-      marginTop: '1rem'
-    }
-  };
-
-  const getStyle = (baseStyle, mobileStyle) => {
-    return isMobile ? { ...baseStyle, ...mobileStyle } : baseStyle;
-  };
-
   return (
-    <div style={getStyle(pageStyle, mobileStyles.pageStyle)}>
+    <div style={pageStyle}>
       <div style={containerStyle}>
-        <h1 style={getStyle(pageTitleStyle, mobileStyles.pageTitleStyle)}>
-          {t('newsTitle')}
-        </h1>
-        <p style={getStyle(pageSubtitleStyle, mobileStyles.pageSubtitleStyle)}>
-          {t('newsText')}
-        </p>
         
-        <div style={newsListStyle}>
-          {currentNews.map(item => (
-            <div 
+        {/* Header Section */}
+        <div style={headerStyle}>
+          <h1 style={pageTitleStyle}>{t('newsTitle')}</h1>
+          <p style={pageSubtitleStyle}>
+            {language === 'ua' 
+              ? 'Слідкуйте за останніми оновленнями, історіями успіху та можливостями від ESN Ukraine.' 
+              : 'Stay tuned for the latest updates, success stories, and opportunities from ESN Ukraine.'}
+          </p>
+        </div>
+
+        {/* News Grid */}
+        <div style={newsGridStyle}>
+          {currentNews.map((item) => (
+            <article 
               key={item.id} 
-              style={getStyle(newsItemStyle, mobileStyles.newsItemStyle)}
+              style={cardStyle}
               onMouseEnter={(e) => {
                 if (!isMobile) {
                     e.currentTarget.style.transform = 'translateY(-5px)';
-                    // Ефект світіння (тіні) без рамки, як в Events
-                    e.currentTarget.style.boxShadow = '0 15px 35px rgba(122, 193, 67, 0.25)'; 
+                    e.currentTarget.style.boxShadow = '0 15px 35px rgba(122, 193, 67, 0.25)';
+                    const img = e.currentTarget.querySelector('.card-image');
+                    if(img) img.style.transform = 'scale(1.05)';
                 }
               }}
               onMouseLeave={(e) => {
                 if (!isMobile) {
                     e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.boxShadow = '0 5px 20px rgba(0, 0, 0, 0.05)';
+                    e.currentTarget.style.boxShadow = '0 10px 40px rgba(0,0,0,0.06)';
+                    const img = e.currentTarget.querySelector('.card-image');
+                    if(img) img.style.transform = 'scale(1)';
                 }
               }}
             >
-              <img 
-                src={item.image} 
-                alt={item.title} 
-                style={getStyle(newsImageStyle, mobileStyles.newsImageStyle)} 
-              />
-              <div style={getStyle(newsContentStyle, mobileStyles.newsContentStyle)}>
-                <div style={newsMetaStyle}>
-                  <span style={newsDateStyle}>{item.date}</span>
-                  {item.categories && item.categories.map((cat, index) => (
-                    <span key={index} style={newsCategoryStyle}>{cat}</span>
-                  ))}
+              <div style={imageContainerStyle}>
+                {item.categories && item.categories[0] && (
+                  <span style={categoryTagStyle}>{item.categories[0]}</span>
+                )}
+                <img 
+                  src={item.image} 
+                  alt={item.title} 
+                  className="card-image"
+                  style={cardImageStyle}
+                  onError={(e) => { e.target.src = 'https://via.placeholder.com/600x400?text=ESN+News'; }}
+                />
+              </div>
+
+              <div style={cardContentStyle}>
+                <div style={dateStyle}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                  </svg>
+                  {item.date}
                 </div>
-                <h3 style={getStyle(newsTitleStyle, mobileStyles.newsTitleStyle)}>
-                  {item.title}
-                </h3>
-                <p style={getStyle(newsExcerptStyle, mobileStyles.newsExcerptStyle)}>
-                  {item.excerpt}
-                </p>
+                
+                <h3 style={titleStyle}>{item.title}</h3>
+                <p style={excerptStyle}>{item.excerpt}</p>
+                
                 <button 
-                  style={getStyle(readMoreStyle, mobileStyles.readMoreStyle)}
+                  style={readMoreBtnStyle}
                   onMouseEnter={(e) => {
-                    e.target.style.background = '#68a73a';
-                    e.target.style.transform = 'translateY(-2px)';
-                    e.target.style.boxShadow = '0 6px 20px rgba(122, 193, 67, 0.3)';
+                    e.target.style.background = '#7ac143';
+                    e.target.style.color = '#ffffff';
                   }}
                   onMouseLeave={(e) => {
-                    e.target.style.background = '#7ac143';
-                    e.target.style.transform = 'translateY(0)';
-                    e.target.style.boxShadow = 'none';
+                    e.target.style.background = 'transparent';
+                    e.target.style.color = '#7ac143';
                   }}
                 >
                   {t('readMore')}
                 </button>
               </div>
-            </div>
+            </article>
           ))}
         </div>
 
-        {/* Пагінація (тільки цифри та стрілки) */}
+        {/* Pagination */}
         <div style={paginationContainerStyle}>
-            <button 
-                onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
-                disabled={currentPage === 1}
-                style={{...paginationButtonStyle(false), opacity: currentPage === 1 ? 0.5 : 1, cursor: currentPage === 1 ? 'default' : 'pointer'}}
-            >
-                &lt;
-            </button>
+          <button 
+            onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
+            disabled={currentPage === 1}
+            style={{
+                ...paginationBtnStyle(false),
+                opacity: currentPage === 1 ? 0.5 : 1,
+                cursor: currentPage === 1 ? 'default' : 'pointer'
+            }}
+          >
+            ←
+          </button>
 
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map(number => (
-                <button
-                    key={number}
-                    onClick={() => handlePageChange(number)}
-                    style={paginationButtonStyle(currentPage === number)}
-                >
-                    {number}
-                </button>
-            ))}
-
-            <button 
-                onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
-                disabled={currentPage === totalPages}
-                style={{...paginationButtonStyle(false), opacity: currentPage === totalPages ? 0.5 : 1, cursor: currentPage === totalPages ? 'default' : 'pointer'}}
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map(number => (
+            <button
+              key={number}
+              onClick={() => handlePageChange(number)}
+              style={paginationBtnStyle(currentPage === number)}
             >
-                &gt;
+              {number}
             </button>
+          ))}
+
+          <button 
+            onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
+            disabled={currentPage === totalPages}
+            style={{
+                ...paginationBtnStyle(false),
+                opacity: currentPage === totalPages ? 0.5 : 1,
+                cursor: currentPage === totalPages ? 'default' : 'pointer'
+            }}
+          >
+            →
+          </button>
         </div>
 
       </div>

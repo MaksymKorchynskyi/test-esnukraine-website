@@ -1,11 +1,10 @@
 // Home.js
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useLanguage } from '../LanguageContext'; // Додано імпорт контексту
+import { useLanguage } from '../LanguageContext';
 
-// Більше не приймаємо language як prop, використовуємо контекст
 const Home = () => {
-  const { language } = useLanguage(); // Використовуємо контекст
+  const { language } = useLanguage();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [email, setEmail] = useState('');
   const [isSubscribed, setIsSubscribed] = useState(false);
@@ -13,46 +12,51 @@ const Home = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
 
-  // Змінні для свайпу (Touch)
+  // Змінні для свайпу
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
-  const minSwipeDistance = 50; // Мінімальна відстань для зарахування свайпу
+  const minSwipeDistance = 40; 
 
-  // Refs для слайдерів
   const newsSliderRef = useRef(null);
   const eventsSliderRef = useRef(null);
 
-  // --- ДАНІ ---
+  // --- ДАНІ (Оновлені СВІТЛІШІ градієнти) ---
   const bannerNews = [
     {
       id: 1,
-      image: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80',
-      title: language === 'ua' ? 'Welcome Week 2024 успішно розпочато' : 'Welcome Week 2024 Successfully Started',
+      image: process.env.PUBLIC_URL + '/images/new_voice_of_courage.png',
+      title: language === 'ua' ? 'Voices of Courage: 20 студентів, 20 історій, одне бачення' : 'Voices of Courage: 20 Students, 20 Stories, One Vision',
       description: language === 'ua' 
-        ? 'ESN Ukraine успішно запустила Welcome Week 2024 за участю понад 300 іноземних студентів. Це був неймовірний тиждень знайомств.'
-        : 'ESN Ukraine successfully launched the Welcome Week 2024 with over 300 international students. It was an incredible week of networking.',
-      link: '/news/1',
-      color: '#00aeef'
+        ? 'Зворушлива збірка історій українських студентів, чия сила, стійкість і надія переосмислюють те, що означає здобувати освіту у часи війни.'
+        : 'A moving collection of stories from Ukrainian students whose strength, resilience, and hope redefine what it means to pursue education in times of war.',
+      link: '/news/voices-of-courage',
+      color: '#00aeef',
+      // Світліший Cyan -> Blue
+      gradient: 'linear-gradient(135deg, #4dc4f4 0%, #00aeef 100%)' 
     },
     {
       id: 2,
-      image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80',
+      image: process.env.PUBLIC_URL + '/images/snapedit_1764526121207.jpeg',
       title: language === 'ua' ? 'Нова партнерська угода з Київським університетом' : 'New Partnership with Kyiv University',
       description: language === 'ua'
         ? 'ESN Ukraine оголошує про нову партнерську угоду з Київським національним університетом.'
         : 'ESN Ukraine announces a new partnership with Taras Shevchenko National University of Kyiv.',
       link: '/news/2',
-      color: '#ed008c'
+      color: '#ed008c',
+      // Світліший Pink -> Deep Pink
+      gradient: 'linear-gradient(135deg, #ff69b4 0%, #ed008c 100%)'
     },
     {
       id: 3,
-      image: 'https://images.unsplash.com/photo-1559027615-cfa462850979?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80',
+      image: process.env.PUBLIC_URL + '/images/IMG_4456.JPG',
       title: language === 'ua' ? 'Фестиваль культурного обміну 2023' : 'Cultural Exchange Festival 2023',
       description: language === 'ua'
         ? 'Приєднуйтесь до Фестивалю культурного обміну з їжею, музикою та традиціями з усього світу.'
         : 'Join the Cultural Exchange Festival featuring food, music, and traditions from around the world.',
       link: '/news/3',
-      color: '#7ac143'
+      color: '#7ac143',
+      // Світліший Green -> ESN Green
+      gradient: 'linear-gradient(135deg, #9bd668 0%, #7ac143 100%)'
     },
     {
       id: 4,
@@ -62,7 +66,8 @@ const Home = () => {
         ? 'Станьте частиною нашої команди та змінюйте життя іноземних студентів на краще.'
         : 'Become part of our team and change the lives of international students for the better.',
       link: '/join',
-      color: '#f57b20'
+      color: '#f57b20',
+      gradient: 'linear-gradient(135deg, #ff9e57 0%, #f57b20 100%)'
     },
     {
       id: 5,
@@ -72,9 +77,85 @@ const Home = () => {
         ? 'Святкуємо дні програми Erasmus+ разом з усією Європою. Приєднуйтесь до подій!'
         : 'Celebrating Erasmus+ program days together with the whole of Europe. Join the events!',
       link: '/events',
-      color: '#2e3192'
+      color: '#2e3192',
+      gradient: 'linear-gradient(135deg, #5c5fff 0%, #2e3192 100%)'
     }
   ];
+
+  // --- CSS АНІМАЦІЯ ---
+  const globalAnimations = `
+    @keyframes shine-effect {
+      0% { left: -100%; opacity: 0; }
+      20% { opacity: 0.5; }
+      100% { left: 100%; opacity: 0; }
+    }
+    
+    .animated-btn {
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+      transform: translateZ(0);
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important; 
+    }
+
+    /* Ховер ефект для десктопу */
+    @media (min-width: 901px) {
+      .animated-btn:hover {
+        transform: translateY(-4px) scale(1.02) !important;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.15) !important;
+      }
+    }
+
+    .animated-btn:active {
+      transform: scale(0.95) !important;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1) !important;
+    }
+
+    /* Стилі для кнопок слайдера (стрілочки) */
+    .slider-nav-btn {
+      transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .slider-nav-btn:hover {
+      background: #f8f9fa !important;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(0,0,0,0.1) !important;
+    }
+    .slider-nav-btn:active {
+      transform: scale(0.85) !important; /* Ефект натискання */
+      box-shadow: inset 0 2px 5px rgba(0,0,0,0.1) !important;
+    }
+
+    /* Анімація для кнопки "Вгору" */
+    @keyframes pulse-transparent {
+      0% { box-shadow: 0 0 0 0 rgba(46, 49, 146, 0.4); transform: scale(1); }
+      50% { box-shadow: 0 0 0 10px rgba(46, 49, 146, 0); transform: scale(1.05); }
+      100% { box-shadow: 0 0 0 0 rgba(46, 49, 146, 0); transform: scale(1); }
+    }
+
+    .scroll-top-btn {
+      animation: pulse-transparent 2s infinite;
+    }
+    
+    .scroll-top-btn:active {
+      transform: scale(0.9);
+      animation: none;
+    }
+
+    /* --- ГЕНЕРАЦІЯ УНІКАЛЬНИХ КЛАСІВ ДЛЯ КНОПОК БАНЕРА --- */
+    ${bannerNews.map((news) => `
+      .banner-btn-${news.id} {
+        color: ${news.color} !important;
+        background: #ffffff !important;
+        border: none !important;
+      }
+      
+      .banner-btn-${news.id}:hover, .banner-btn-${news.id}:active {
+        background: ${news.gradient} !important;
+        color: #ffffff !important;
+        box-shadow: 0 8px 25px ${news.color}66 !important;
+      }
+    `).join('\n')}
+  `;
 
   const latestNews = [
     {
@@ -144,11 +225,16 @@ const Home = () => {
 
   // --- ЛОГІКА ---
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 900);
     };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
+  useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 400) {
         setShowScrollTop(true);
@@ -156,15 +242,8 @@ const Home = () => {
         setShowScrollTop(false);
       }
     };
-
-    handleResize();
-    window.addEventListener('resize', handleResize);
     window.addEventListener('scroll', handleScroll);
-    
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      window.removeEventListener('scroll', handleScroll);
-    };
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   useEffect(() => {
@@ -174,7 +253,6 @@ const Home = () => {
     return () => clearInterval(interval);
   }, [bannerNews.length]);
 
-  // --- ЛОГІКА СВАЙПУ ДЛЯ БАНЕРА ---
   const onTouchStart = (e) => {
     setTouchEnd(null);
     setTouchStart(e.targetTouches[0].clientX);
@@ -191,13 +269,18 @@ const Home = () => {
     const isRightSwipe = distance < -minSwipeDistance;
 
     if (isLeftSwipe) {
-        // Свайп вліво - наступний слайд
-        setCurrentSlide((prev) => (prev + 1) % bannerNews.length);
+      setCurrentSlide((prev) => (prev + 1) % bannerNews.length);
     }
     if (isRightSwipe) {
-        // Свайп вправо - попередній слайд
-        setCurrentSlide((prev) => (prev - 1 + bannerNews.length) % bannerNews.length);
+      setCurrentSlide((prev) => (prev - 1 + bannerNews.length) % bannerNews.length);
     }
+    setTouchStart(null);
+    setTouchEnd(null);
+  };
+
+  const onTouchCancel = () => {
+    setTouchStart(null);
+    setTouchEnd(null);
   };
 
   const handleSubscribe = (e) => {
@@ -216,10 +299,9 @@ const Home = () => {
     });
   };
 
-  // Функція для прокрутки слайдера
   const scrollSlider = (ref, direction) => {
     if (ref.current) {
-      const scrollAmount = isMobile ? 320 : 400; // Ширина прокрутки
+      const scrollAmount = isMobile ? 320 : 400;
       ref.current.scrollBy({
         left: direction === 'left' ? -scrollAmount : scrollAmount,
         behavior: 'smooth'
@@ -229,65 +311,121 @@ const Home = () => {
 
   // --- СТИЛІ ---
 
+  // Відступ під хедер
+  const pageContainerStyle = {
+    width: '100%',
+    margin: 0,
+    padding: 0,
+    overflowX: 'hidden',
+    background: '#ffffff',
+    minHeight: '100vh',
+    paddingTop: isMobile ? '85px' : '90px' 
+  };
+
   const getStyle = (baseStyle, mobileStyleOverride) => {
     return isMobile ? { ...baseStyle, ...mobileStyleOverride } : baseStyle;
   };
 
+  // МОБІЛЬНІ СТИЛІ
   const mobileStyles = {
     heroSectionStyle: {
-        padding: '0',
-        marginTop: '85px', // Фіксований відступ
-        marginBottom: '0',
-        width: '100%'
+        paddingTop: '0',  
+        paddingBottom: '0', 
+        width: '100%',
+        marginTop: '0',
+        marginBottom: '0'
     },
     heroBannerStyle: {
-        height: '550px',
-        minHeight: '550px',
-        width: '100%',
-        borderRadius: '0',
+        height: 'auto', 
+        minHeight: 'auto',
+        width: '100%', 
+        borderRadius: '0', 
         margin: '0',
-        boxShadow: 'none'
+        boxShadow: 'none', 
+        display: 'flex', 
+        flexDirection: 'column'
+    },
+    sliderStyleOverride: {
+        height: 'auto',
+        minHeight: 'auto'
+    },
+    slideStyleOverride: {
+        height: 'auto',
+        minHeight: 'auto',
+        display: 'flex',
+        flexDirection: 'column'
     },
     slideContentStyle: {
-        gridTemplateColumns: '1fr',
-        gridTemplateRows: '60% 40%', 
-        height: '100%' 
+        display: 'flex',
+        flexDirection: 'column', 
+        height: 'auto',
+        width: '100%'
+    },
+    slideImageWrapperStyle: {
+        width: '100%',
+        height: '300px', 
+        position: 'relative',
+        flexShrink: 0 
     },
     slideTextStyle: {
-        padding: '1.5rem',
+        // Висота фіксована 170px
+        padding: '1.2rem 1rem 3rem 1rem', 
         alignItems: 'center',
         textAlign: 'center',
-        height: '100%',
-        justifyContent: 'flex-start',
-        paddingTop: '1.5rem',
-        background: 'linear-gradient(180deg, #2e3192 0%, #00aeef 100%)'
+        height: '170px', 
+        minHeight: '170px',
+        flex: '0 0 auto', 
+        justifyContent: 'space-between', 
+        background: 'linear-gradient(180deg, #2e3192 0%, #00aeef 100%)',
+        color: '#ffffff',
+        overflow: 'hidden', 
+        position: 'relative'
     },
     slideTitleStyle: {
-        fontSize: '1.8rem', // Компактний заголовок слайда
-        marginBottom: '0.5rem',
-        lineHeight: '1.2'
+        fontSize: '1.2rem', 
+        marginBottom: '0.4rem',
+        lineHeight: '1.2',
+        display: '-webkit-box',
+        WebkitLineClamp: 2,
+        WebkitBoxOrient: 'vertical',
+        overflow: 'hidden'
     },
+    slideDescriptionStyle: {
+        fontSize: '0.85rem',
+        marginBottom: '0',
+        lineHeight: '1.3',
+        opacity: 0.95,
+        display: '-webkit-box',
+        WebkitLineClamp: 2,
+        WebkitBoxOrient: 'vertical',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis'
+    },
+    
+    // --- Інші секції мобільні ---
     contentGridStyle: {
         display: 'flex',
-        flexDirection: 'column', // Вертикальне розташування
-        gap: '2rem'
+        flexDirection: 'column',
+        gap: '2rem',
+        textAlign: 'center' 
     },
     sectionStyle: {
-        padding: '2rem 0' // Менші відступи на мобільному
+        padding: '3rem 0'
     },
     sectionTitleStyle: {
-        fontSize: '1.7rem', // Зменшено щоб помістилося в рядок "This is ESN Ukraine"
+        fontSize: '1.8rem',
         padding: '0 1rem',
-        whiteSpace: 'nowrap',
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-        marginBottom: '1rem'
+        marginBottom: '1rem',
+        textAlign: 'center' 
     },
     sectionSubtitleStyle: {
-        marginBottom: '2rem'
+        marginBottom: '2rem',
+        textAlign: 'center', 
+        paddingLeft: '1rem',
+        paddingRight: '1rem'
     },
     aboutImageStyle: {
-        height: '250px', // Компактне фото
+        height: '250px',
         width: '100%',
         marginBottom: '1rem',
         borderRadius: '12px'
@@ -307,7 +445,9 @@ const Home = () => {
         width: '100%'
     },
     subscribeButtonStyle: {
-        width: '100%'
+        width: 'fit-content',
+        margin: '0 auto',
+        padding: '0.8rem 2rem'
     },
     sliderContainerStyle: {
         padding: '0 1rem',
@@ -319,55 +459,68 @@ const Home = () => {
     }
   };
 
-  // Hero Section
+  // --- DEKSTOP STYLES ---
+  
   const heroSectionStyle = {
     paddingTop: '4rem',    
-    paddingBottom: '2rem', 
+    paddingBottom: '4rem', 
     width: '100%',
-    background: '#f8f9fae2',
-    marginTop: '85px', // Завжди 85px, щоб не прилипало
+    background: '#f8f9fae2'
   };
 
   const heroBannerStyle = {
     position: 'relative',
-    height: '60vh',
-    minHeight: '450px',
-    maxHeight: '550px',
+    height: '600px', 
     overflow: 'hidden',
     width: '94%', 
-    maxWidth: '1400px',
+    maxWidth: '1400px', 
     margin: '0 auto',
     background: '#ffffff',
-    borderRadius: '0px',
-    boxShadow: '0 5px 15px rgba(0,0,0,0.1)'
+    borderRadius: '0px', 
+    boxShadow: '0 15px 40px rgba(0,0,0,0.1)', 
+    touchAction: 'pan-y'
   };
 
   const sliderStyle = {
     display: 'flex',
     width: `${bannerNews.length * 100}%`, 
-    height: '100%',
-    transition: 'transform 0.8s ease',
+    height: '100%', 
+    transition: 'transform 0.8s ease-in-out', 
     transform: `translateX(-${currentSlide * (100 / bannerNews.length)}%)`
   };
 
   const slideStyle = {
     width: `${100 / bannerNews.length}%`,
-    height: '100%',
-    position: 'relative'
+    height: '100%', 
+    position: 'relative',
+    flexShrink: 0 
   };
 
   const slideContentStyle = {
     display: 'grid',
-    gridTemplateColumns: '60% 40%',
+    gridTemplateColumns: '60% 40%', 
     height: '100%',
     width: '100%',
     alignItems: 'center'
   };
 
+  const slideImageWrapperStyle = {
+    width: '100%',
+    height: '100%',
+    position: 'relative',
+    overflow: 'hidden',
+    backgroundColor: '#eee' 
+  };
+
   const slideImageStyle = {
     width: '100%',
     height: '100%',
-    objectFit: 'cover'
+    objectFit: 'cover',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    userSelect: 'none',
+    pointerEvents: 'none' 
   };
 
   const slideTextStyle = {
@@ -375,15 +528,16 @@ const Home = () => {
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
-    padding: '3rem',
+    padding: '4rem', 
     color: '#ffffff',
     height: '100%',
     position: 'relative',
-    zIndex: 2
+    zIndex: 2,
+    overflow: 'hidden'
   };
 
   const slideTitleStyle = {
-    fontSize: '2.2rem',
+    fontSize: '2.5rem', 
     fontWeight: '800',
     marginBottom: '1.5rem',
     lineHeight: 1.1,
@@ -391,53 +545,44 @@ const Home = () => {
   };
 
   const slideDescriptionStyle = {
-    fontSize: isMobile ? '1rem' : '1.1rem', 
-    marginBottom: isMobile ? '1rem' : '2rem',
+    fontSize: isMobile ? '1rem' : '1.2rem', 
+    marginBottom: isMobile ? '1.5rem' : '2.5rem',
     opacity: 0.95,
-    lineHeight: 1.4,
+    lineHeight: 1.6,
     fontFamily: 'Open Sans, sans-serif',
-    maxWidth: isMobile ? '100%' : '450px',
-    display: '-webkit-box',
-    WebkitLineClamp: isMobile ? 3 : 'none',
-    WebkitBoxOrient: 'vertical',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis'
+    maxWidth: isMobile ? '100%' : '550px'
   };
 
-  // Кнопка CTA
+  // Кнопка CTA (Банер)
   const createCtaButtonStyle = (color) => ({
-    background: '#ffffff',
-    color: color,
-    border: 'none',
-    padding: '1rem 2rem', // однаковий паддінг для всіх кнопок
-    borderRadius: '8px',
-    fontWeight: '600',
+    padding: isMobile ? '0.5rem 1rem' : '1rem 2.5rem', 
+    borderRadius: '12px',
+    fontWeight: '700',
     cursor: 'pointer',
-    transition: 'all 0.3s ease',
     textDecoration: 'none',
-    fontSize: '1rem', // однаковий розмір тексту
+    fontSize: isMobile ? '0.8rem' : '1.1rem', 
     boxShadow: '0 4px 15px rgba(0,0,0,0.2)',
     fontFamily: 'Montserrat, sans-serif',
     display: 'inline-block',
-    width: isMobile ? '100%' : 'fit-content',
+    width: 'fit-content',
     textAlign: 'center',
-    minWidth: '220px', // Фіксована мінімальна ширина
-    marginTop: isMobile ? '1rem' : '0' // Відступ зверху на мобільному
+    minWidth: isMobile ? '100px' : '200px', 
+    margin: isMobile ? '0 auto' : '0' 
   });
 
-  // Крапочки для банера
   const dotsStyle = {
     position: 'absolute',
-    top: isMobile ? '2rem' : '1.5rem', // На мобільному опускаємо нижче, щоб був відступ від хедера
-    right: '1.5rem',  
+    bottom: isMobile ? '15px' : '2rem', 
+    right: isMobile ? '50%' : '3rem', 
+    transform: isMobile ? 'translateX(50%)' : 'none',
     display: 'flex',
     gap: '0.8rem',
     zIndex: 10
   };
 
   const dotStyle = {
-    width: '14px',
-    height: '14px',
+    width: '12px',
+    height: '12px',
     borderRadius: '50%',
     background: 'rgba(255, 255, 255, 0.4)',
     cursor: 'pointer',
@@ -448,12 +593,14 @@ const Home = () => {
   const activeDotStyle = {
     ...dotStyle,
     background: '#ffffff',
-    transform: 'scale(1.2)',
-    border: 'none'
+    transform: 'scale(1.3)',
+    border: 'none',
+    boxShadow: '0 0 10px rgba(255,255,255,0.5)'
   };
 
+  // --- ЗАГАЛЬНІ СТИЛІ СЕКЦІЙ ---
   const sectionStyle = {
-    padding: '3.5rem 0',
+    padding: '5rem 0', 
     width: '100%',
     background: '#ffffff'
   };
@@ -519,15 +666,19 @@ const Home = () => {
 
   const joinSectionStyle = { ...sectionStyle };
   const joinContentStyle = { ...aboutContentStyle };
-  const joinTextStyle = { ...aboutTextStyle };
+  const joinTextStyle = { 
+    ...aboutTextStyle,
+    alignItems: isMobile ? 'center' : 'flex-start', 
+    textAlign: isMobile ? 'center' : 'left'
+  };
   
-  // ШРИФТ ДЛЯ Join Us (Такий самий як This is ESN - 3rem на десктоп)
   const joinTitleStyle = {
-    fontSize: isMobile ? '2rem' : '3rem', // Збільшено для десктопа
+    fontSize: isMobile ? '2rem' : '3rem',
     fontWeight: '600',
     marginBottom: '1.5rem',
     fontFamily: 'Montserrat, sans-serif',
-    color: '#f57b20'
+    color: '#f57b20',
+    textAlign: isMobile ? 'center' : 'left' 
   };
 
   const joinParagraphStyle = { ...aboutParagraphStyle };
@@ -596,13 +747,12 @@ const Home = () => {
     background: 'rgba(255, 255, 255, 0.95)',
     color: '#2e3192',
     border: 'none',
-    padding: '1rem 2rem',
+    padding: isMobile ? '0.8rem 2rem' : '1rem 2rem', // Компактніше на моб
     borderRadius: '10px',
     fontWeight: '600',
     cursor: 'pointer',
-    fontSize: '1rem',
+    fontSize: isMobile ? '0.9rem' : '1rem', // Менший шрифт
     fontFamily: 'Montserrat, sans-serif',
-    transition: 'all 0.3s ease',
     boxShadow: '0 4px 15px rgba(0, 0, 0, 0.15)',
     letterSpacing: '0.3px',
     whiteSpace: 'nowrap'
@@ -620,7 +770,7 @@ const Home = () => {
     boxShadow: '0 4px 12px rgba(122, 193, 67, 0.25)'
   };
 
-  // --- СТИЛІ ДЛЯ СЛАЙДЕРІВ ---
+  // --- СТИЛІ ДЛЯ СЛАЙДЕРІВ (Новини) ---
   const sliderTrackStyle = {
     display: 'flex',
     overflowX: 'auto', 
@@ -640,25 +790,23 @@ const Home = () => {
     flexShrink: 0
   };
 
-  // Красиві кнопки-стрілки для слайдера (SVG)
+  // ОНОВЛЕНІ СТИЛІ КНОПОК СЛАЙДЕРА (Квадратні з заокругленням + тіні)
   const sliderNavButtonStyle = (color) => ({
-    background: 'rgba(255, 255, 255, 0.9)',
+    background: 'rgba(255, 255, 255, 0.95)',
     border: `2px solid ${color}`,
     color: color,
     width: '50px',
     height: '50px',
-    borderRadius: '50%', // Круглі кнопки красивіші
+    borderRadius: '12px', // Квадратні з заокругленням
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     cursor: 'pointer',
-    transition: 'all 0.3s ease',
     zIndex: 10,
     backdropFilter: 'blur(5px)',
-    boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+    boxShadow: '0 4px 10px rgba(0,0,0,0.1)' // Тінь
   });
 
-  // SVG Стрілка для слайдера
   const ArrowIcon = ({ direction }) => (
      <svg 
         width="24" height="24" viewBox="0 0 24 24" fill="none" 
@@ -669,7 +817,6 @@ const Home = () => {
      </svg>
   );
 
-  // --- КАРТКИ ---
   const createCardStyle = (color) => ({
     background: '#ffffff',
     borderRadius: '15px',
@@ -726,58 +873,63 @@ const Home = () => {
     color: color,
     background: 'transparent',
     border: `2px solid ${color}`,
-    padding: '0.6rem 1.5rem',
+    padding: isMobile ? '0.6rem 1.2rem' : '0.6rem 1.5rem', // Компактніше на моб
     borderRadius: '8px',
     fontWeight: '600',
     cursor: 'pointer',
-    transition: 'all 0.3s ease',
     textDecoration: 'none',
-    fontSize: '0.9rem',
+    fontSize: isMobile ? '0.85rem' : '0.9rem', // Менший шрифт
     fontFamily: 'Montserrat, sans-serif',
     alignSelf: 'flex-end', 
     marginLeft: 'auto',
     textAlign: 'center',
     display: 'inline-block',
     marginTop: 'auto',
-    width: isMobile ? '100%' : 'fit-content'
+    width: 'fit-content', // Завжди компактна ширина
+    margin: isMobile ? '0 auto' : 'auto 0 0 auto' // Центрування на моб
   });
 
   const createViewAllButtonStyle = (color) => ({
     display: 'inline-block',
     background: color,
     color: '#ffffff',
-    padding: '1rem 2rem',
+    padding: isMobile ? '0.8rem 1.5rem' : '1rem 2rem', // Компактніше
     borderRadius: '8px',
     textDecoration: 'none',
     fontWeight: '600',
-    transition: 'all 0.3s ease',
     marginTop: '0', 
-    fontSize: '1rem',
-    fontFamily: 'Montserrat, sans-serif'
+    fontSize: isMobile ? '0.9rem' : '1rem', // Менший шрифт
+    fontFamily: 'Montserrat, sans-serif',
+    width: 'fit-content', // Компактна
+    margin: '0 auto' // Центрування
   });
 
+  // НОВИЙ ДИЗАЙН КНОПКИ SCROLL TO TOP
   const scrollTopButtonStyle = {
     position: 'fixed',
-    bottom: '2rem',
-    right: '2rem',
-    width: '45px',
-    height: '45px',
-    background: '#6c757d',
-    color: '#ffffff',
-    borderRadius: '12px',
+    bottom: isMobile ? '1.5rem' : '2rem', // Більш компактний відступ на моб
+    right: isMobile ? '1.5rem' : '2rem',
+    width: isMobile ? '40px' : '50px', // Менший розмір на моб (40px)
+    height: isMobile ? '40px' : '50px',
+    
+    // Прозорий фон градієнт (синій ESN), без матового скла
+    background: 'linear-gradient(180deg, rgba(46, 49, 146, 0.8) 0%, rgba(0, 174, 239, 0.8) 100%)',
     border: 'none',
+    color: '#ffffff',
+    
+    borderRadius: '12px', // Квадратна з заокругленими кутами
     cursor: 'pointer',
     display: showScrollTop ? 'flex' : 'none',
     alignItems: 'center',
     justifyContent: 'center',
-    fontSize: '1.2rem',
-    boxShadow: '0 4px 10px rgba(0, 0, 0, 0.2)',
+    fontSize: isMobile ? '1rem' : '1.2rem',
     transition: 'all 0.3s ease',
     zIndex: 1000
   };
 
   return (
-    <div style={{ width: '100%', margin: 0, padding: 0, overflowX: 'hidden', background: '#ffffff', minHeight: '100vh' }}>
+    <div style={pageContainerStyle}>
+      <style>{globalAnimations}</style>
       
       {/* Hero Section */}
       <section style={getStyle(heroSectionStyle, mobileStyles.heroSectionStyle)}>
@@ -786,31 +938,35 @@ const Home = () => {
             onTouchStart={onTouchStart}
             onTouchMove={onTouchMove}
             onTouchEnd={onTouchEnd}
+            onTouchCancel={onTouchCancel} 
         >
-          <div style={sliderStyle}>
+          {/* Slider Container */}
+          <div style={isMobile ? { ...sliderStyle, ...mobileStyles.sliderStyleOverride } : sliderStyle}>
             {bannerNews.map((slide, index) => {
               const SlideContent = () => (
                 <div style={getStyle(slideContentStyle, mobileStyles.slideContentStyle)}>
-                  <img src={slide.image} alt={slide.title} style={slideImageStyle} />
+                  {/* Обгортка для зображення */}
+                  <div style={getStyle(slideImageWrapperStyle, mobileStyles.slideImageWrapperStyle)}>
+                    <img 
+                        src={slide.image} 
+                        alt={slide.title} 
+                        style={slideImageStyle} 
+                        draggable={false} 
+                    />
+                  </div>
+                  
                   <div style={getStyle(slideTextStyle, mobileStyles.slideTextStyle)}>
-                    <h1 style={getStyle(slideTitleStyle, mobileStyles.slideTitleStyle)} className="hero-title">{slide.title}</h1>
-                    <p style={slideDescriptionStyle}>{slide.description}</p>
+                    <div>
+                      <h1 style={getStyle(slideTitleStyle, mobileStyles.slideTitleStyle)}>{slide.title}</h1>
+                      <p style={getStyle(slideDescriptionStyle, mobileStyles.slideDescriptionStyle)}>{slide.description}</p>
+                    </div>
                     
+                    {/* Кнопка відображається ТІЛЬКИ на десктопі */}
                     {!isMobile && (
                       <Link 
                         to={slide.link} 
+                        className={`animated-btn banner-btn-${slide.id}`}
                         style={createCtaButtonStyle(slide.color)}
-                        className="cta-button"
-                        onMouseEnter={(e) => {
-                          e.target.style.background = '#f8f9fa';
-                          e.target.style.transform = 'translateY(-3px)';
-                          e.target.style.boxShadow = '0 8px 25px rgba(0,0,0,0.3)';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.target.style.background = '#ffffff';
-                          e.target.style.transform = 'translateY(0)';
-                          e.target.style.boxShadow = '0 4px 15px rgba(0,0,0,0.2)';
-                        }}
                       >
                         {language === 'ua' ? 'Детальніше' : 'Read More'}
                       </Link>
@@ -820,18 +976,20 @@ const Home = () => {
               );
 
               return (
-                <div key={index} style={slideStyle}>
-                  {isMobile ? (
-                    <Link to={slide.link} style={{textDecoration: 'none', color: 'inherit', display: 'block', height: '100%'}}>
+                <div key={index} style={isMobile ? { ...slideStyle, ...mobileStyles.slideStyleOverride } : slideStyle}>
+                   {/* На мобільному робимо ВЕСЬ слайд посиланням */}
+                   {isMobile ? (
+                      <Link to={slide.link} style={{ display: 'block', height: '100%', width: '100%', textDecoration: 'none', color: 'inherit' }}>
+                        <SlideContent />
+                      </Link>
+                   ) : (
                       <SlideContent />
-                    </Link>
-                  ) : (
-                    <SlideContent />
-                  )}
+                   )}
                 </div>
               );
             })}
           </div>
+
           <div style={dotsStyle}>
             {bannerNews.map((_, index) => (
               <div
@@ -847,16 +1005,14 @@ const Home = () => {
       {/* About ESN Ukraine Section */}
       <section style={getStyle(aboutSectionStyle, mobileStyles.sectionStyle)}>
         <div style={containerStyle}>
-          <h2 style={getStyle(sectionTitleStyle, mobileStyles.sectionTitleStyle)} className="section-title">
+          <h2 style={getStyle(sectionTitleStyle, mobileStyles.sectionTitleStyle)}>
             {language === 'ua' ? 'Це ESN Ukraine' : 'This is ESN Ukraine'}
           </h2>
-          {/* Для мобільного: Текст -> Фото -> Кнопка */}
           <div style={{
               ...getStyle(aboutContentStyle, mobileStyles.contentGridStyle),
               display: isMobile ? 'flex' : 'grid',
               flexDirection: 'column' 
           }}>
-            {/* Блок тексту */}
             <div style={aboutTextStyle}>
               <p style={aboutParagraphStyle}>
                 {language === 'ua' 
@@ -865,10 +1021,9 @@ const Home = () => {
                 }
               </p>
               
-              {/* На мобільному фото тут (між текстом і кнопкою) */}
               {isMobile && (
                  <img 
-                    src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
+                    src= {process.env.PUBLIC_URL + '/images/esn_t_photo.jpg'}
                     alt="ESN Ukraine Team" 
                     style={getStyle(aboutImageStyle, mobileStyles.aboutImageStyle)}
                  />
@@ -882,35 +1037,28 @@ const Home = () => {
               </p>
               
               <button 
+                className="animated-btn"
                 style={{
                   ...createCtaButtonStyle('#00aeef'),
                   background: '#00aeef',
                   color: '#ffffff',
-                  alignSelf: isMobile ? 'stretch' : 'flex-start',
+                  alignSelf: isMobile ? 'center' : 'flex-start',
                   border: 'none',
-                  width: isMobile ? '100%' : 'fit-content'
-                }}
-                className="cta-button"
-                onMouseEnter={(e) => {
-                  e.target.style.background = '#0099d6';
-                  e.target.style.transform = 'translateY(-3px)';
-                  e.target.style.boxShadow = '0 8px 25px rgba(0, 174, 239, 0.3)';
-                }}
-                onMouseLeave={(e) => {
-                  e.target.style.background = '#00aeef';
-                  e.target.style.transform = 'translateY(0)';
-                  e.target.style.boxShadow = '0 4px 15px rgba(0,0,0,0.2)';
+                  // ОНОВЛЕНО: менші розміри на десктопі, фіксована ширина на мобільному
+                  padding: isMobile ? '0.8rem 2rem' : '0.8rem 2rem', 
+                  fontSize: isMobile ? '1rem' : '0.95rem',
+                  width: isMobile ? '250px' : 'fit-content', // Однакова ширина на мобільному
+                  margin: isMobile ? '0 auto' : '0'
                 }}
               >
                 {language === 'ua' ? 'Дізнатися більше про нас' : 'Learn More About Us'}
               </button>
             </div>
 
-            {/* На десктопі фото тут (збоку) */}
             {!isMobile && (
                <div>
                  <img 
-                   src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
+                  src= {process.env.PUBLIC_URL + '/images/esn_t_photo.jpg'}
                    alt="ESN Ukraine Team" 
                    style={getStyle(aboutImageStyle, mobileStyles.aboutImageStyle)}
                  />
@@ -923,32 +1071,29 @@ const Home = () => {
       {/* Join Us Section */}
       <section style={getStyle(joinSectionStyle, mobileStyles.sectionStyle)}>
         <div style={containerStyle}>
-          {/* Для мобільного: Текст -> Фото -> Кнопка */}
           <div style={{
               ...getStyle(joinContentStyle, mobileStyles.contentGridStyle),
               display: isMobile ? 'flex' : 'grid',
               flexDirection: 'column'
           }}>
-            {/* На десктопі фото зліва */}
             {!isMobile && (
                <div>
                  <img 
-                   src="https://images.unsplash.com/photo-1559027615-cfa462850979?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                   src= {process.env.PUBLIC_URL + '/images/IMG_7180.jpg'}
                    alt="Join ESN Ukraine" 
                    style={getStyle(joinImageStyle, mobileStyles.aboutImageStyle)}
                  />
                </div>
             )}
 
-            <div style={joinTextStyle}>
-              <h2 style={getStyle(joinTitleStyle, {fontSize: isMobile ? '2rem' : '3rem'})}>
+            <div style={getStyle(joinTextStyle, mobileStyles.joinTextStyle)}>
+              <h2 style={getStyle(joinTitleStyle, mobileStyles.joinTitleStyle)}>
                 {language === 'ua' ? 'Приєднуйтесь до нас' : 'Join Us'}
               </h2>
               
-              {/* На мобільному фото після заголовка перед текстом */}
               {isMobile && (
                   <img 
-                    src="https://images.unsplash.com/photo-1517048676732-d65bc937f952?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
+                    src= {process.env.PUBLIC_URL + '/images/img_7180.jpg'}
                     alt="Join ESN Ukraine" 
                     style={getStyle(joinImageStyle, mobileStyles.aboutImageStyle)}
                   />
@@ -961,26 +1106,18 @@ const Home = () => {
                 }
               </p>
               <button 
+                className="animated-btn"
                 style={{
                   ...createCtaButtonStyle('#f57b20'),
                   background: '#f57b20',
                   color: '#ffffff',
-                  alignSelf: isMobile ? 'stretch' : 'flex-start',
+                  alignSelf: isMobile ? 'center' : 'flex-start',
                   border: 'none',
-                  padding: '1rem 2rem',
-                  fontSize: '1.1rem',
-                  width: isMobile ? '100%' : 'fit-content'
-                }}
-                className="cta-button"
-                onMouseEnter={(e) => {
-                  e.target.style.background = '#e06a10';
-                  e.target.style.transform = 'translateY(-3px)';
-                  e.target.style.boxShadow = '0 8px 25px rgba(245, 123, 32, 0.4)';
-                }}
-                onMouseLeave={(e) => {
-                  e.target.style.background = '#f57b20';
-                  e.target.style.transform = 'translateY(0)';
-                  e.target.style.boxShadow = '0 4px 15px rgba(0,0,0,0.2)';
+                  // ОНОВЛЕНО: менші розміри на десктопі, фіксована ширина на мобільному
+                  padding: isMobile ? '0.8rem 2rem' : '0.8rem 2rem',
+                  fontSize: isMobile ? '1rem' : '0.95rem',
+                  width: isMobile ? '250px' : 'fit-content', // Однакова ширина на мобільному
+                  margin: isMobile ? '0 auto' : '0'
                 }}
               >
                 {language === 'ua' ? 'Стати волонтером' : 'Become a Volunteer'}
@@ -990,25 +1127,23 @@ const Home = () => {
         </div>
       </section>
 
-      {/* --- РОЗДІЛЕНІ СЕКЦІЇ НОВИН ТА ПОДІЙ --- */}
-
       {/* 1. LATEST NEWS SECTION */}
       <section style={{ ...sectionStyle, background: '#ffffff' }}>
         <div style={containerStyle}>
           <div style={{
               display: 'flex', 
               justifyContent: 'space-between', 
-              alignItems: isMobile ? 'flex-start' : 'flex-end', 
+              alignItems: 'center', 
               marginBottom: '2rem',
               flexDirection: isMobile ? 'column' : 'row'
           }}>
-            <div style={{width: '100%'}}>
-              <h2 style={getStyle(sectionTitleStyle, mobileStyles.sectionTitleStyle)} className="section-title">
+            <div style={{width: '100%', textAlign: 'center'}}>
+              <h2 style={getStyle(sectionTitleStyle, mobileStyles.sectionTitleStyle)}>
                 {language === 'ua' ? 'Останні новини' : 'Latest News'}
               </h2>
               <p style={getStyle(
-                  {...sectionSubtitleStyle, textAlign: 'left', margin: '0', paddingLeft: '1rem', marginBottom: '0'},
-                  {...mobileStyles.sectionSubtitleStyle, paddingLeft: '1rem', textAlign: 'left'}
+                  {...sectionSubtitleStyle, margin: '0', marginBottom: '0'},
+                  {...mobileStyles.sectionSubtitleStyle}
               )}>
                 {language === 'ua' 
                   ? 'Дізнавайтеся першими про наші досягнення' 
@@ -1016,22 +1151,19 @@ const Home = () => {
               </p>
             </div>
             
-            {/* Кнопки навігації (Desktop) */}
             {!isMobile && (
-              <div style={{display: 'flex', gap: '1rem', paddingRight: '1rem'}}>
+              <div style={{display: 'flex', gap: '1rem', paddingRight: '1rem', position: 'absolute', right: '10%'}}>
                 <button 
                   onClick={() => scrollSlider(newsSliderRef, 'left')} 
+                  className="slider-nav-btn"
                   style={sliderNavButtonStyle('#7ac143')}
-                  onMouseEnter={e => {e.target.style.background = '#7ac143'; e.target.style.color = '#fff'}}
-                  onMouseLeave={e => {e.target.style.background = 'rgba(255,255,255,0.9)'; e.target.style.color = '#7ac143'}}
                 >
                   <ArrowIcon direction="left" />
                 </button>
                 <button 
                   onClick={() => scrollSlider(newsSliderRef, 'right')} 
+                  className="slider-nav-btn"
                   style={sliderNavButtonStyle('#7ac143')}
-                  onMouseEnter={e => {e.target.style.background = '#7ac143'; e.target.style.color = '#fff'}}
-                  onMouseLeave={e => {e.target.style.background = 'rgba(255,255,255,0.9)'; e.target.style.color = '#7ac143'}}
                 >
                   <ArrowIcon direction="right" />
                 </button>
@@ -1039,7 +1171,6 @@ const Home = () => {
             )}
           </div>
 
-          {/* Слайдер новин */}
           <div 
             ref={newsSliderRef} 
             style={{
@@ -1049,40 +1180,15 @@ const Home = () => {
           >
             {latestNews.map(news => (
               <div key={news.id} style={getStyle(sliderCardWrapperStyle, mobileStyles.sliderCardWrapperStyle)}>
-                <div 
-                  style={createCardStyle(news.color)}
-                  onMouseEnter={(e) => {
-                    if (!isMobile) {
-                      e.currentTarget.style.transform = 'translateY(-5px)';
-                      e.currentTarget.style.boxShadow = `0 10px 25px ${news.color}50`;
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!isMobile) {
-                      e.currentTarget.style.transform = 'translateY(0)';
-                      e.currentTarget.style.boxShadow = '0 5px 20px rgba(0,0,0,0.08)';
-                    }
-                  }}
-                >
-                  <img src={news.image} alt={news.title} style={cardImageStyle} />
+                <div style={createCardStyle(news.color)}>
+                  <img src={news.image} alt={news.title} style={cardImageStyle} draggable={false} />
                   <div style={cardContentStyle}>
                     <div>
                       <span style={{...cardDateStyle, color: news.color}}>{news.date}</span>
                       <h4 style={cardTitleStyle}>{news.title}</h4>
                       <p style={cardTextStyle}>{news.excerpt}</p>
                     </div>
-                    <Link 
-                      to="/news" 
-                      style={createReadMoreStyle(news.color)}
-                      onMouseEnter={(e) => {
-                        e.target.style.background = news.color;
-                        e.target.style.color = '#ffffff';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.target.style.background = 'transparent';
-                        e.target.style.color = news.color;
-                      }}
-                    >
+                    <Link to="/news" className="animated-btn" style={createReadMoreStyle(news.color)}>
                       {language === 'ua' ? 'Детальніше' : 'Read More'}
                     </Link>
                   </div>
@@ -1091,19 +1197,12 @@ const Home = () => {
             ))}
           </div>
           
-          {/* Кнопки навігації (Мобільна версія - знизу по центру) */}
           {isMobile && (
             <div style={{display: 'flex', gap: '1rem', justifyContent: 'center', marginTop: '1rem', marginBottom: '1.5rem'}}>
-                <button 
-                  onClick={() => scrollSlider(newsSliderRef, 'left')} 
-                  style={sliderNavButtonStyle('#7ac143')}
-                >
+                <button onClick={() => scrollSlider(newsSliderRef, 'left')} className="slider-nav-btn" style={sliderNavButtonStyle('#7ac143')}>
                   <ArrowIcon direction="left" />
                 </button>
-                <button 
-                  onClick={() => scrollSlider(newsSliderRef, 'right')} 
-                  style={sliderNavButtonStyle('#7ac143')}
-                >
+                <button onClick={() => scrollSlider(newsSliderRef, 'right')} className="slider-nav-btn" style={sliderNavButtonStyle('#7ac143')}>
                   <ArrowIcon direction="right" />
                 </button>
             </div>
@@ -1112,18 +1211,8 @@ const Home = () => {
           <div style={{textAlign: 'center', marginTop: '1rem'}}>
             <Link 
               to="/news" 
+              className="animated-btn"
               style={createViewAllButtonStyle('#7ac143')}
-              className="cta-button"
-              onMouseEnter={(e) => {
-                e.target.style.background = '#69a838';
-                e.target.style.transform = 'translateY(-2px)';
-                e.target.style.boxShadow = '0 6px 20px rgba(122, 193, 67, 0.3)';
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.background = '#7ac143';
-                e.target.style.transform = 'translateY(0)';
-                e.target.style.boxShadow = 'none';
-              }}
             >
               {language === 'ua' ? 'Переглянути всі новини' : 'View All News'}
             </Link>
@@ -1137,17 +1226,17 @@ const Home = () => {
           <div style={{
               display: 'flex', 
               justifyContent: 'space-between', 
-              alignItems: isMobile ? 'flex-start' : 'flex-end', 
+              alignItems: 'center', 
               marginBottom: '2rem',
               flexDirection: isMobile ? 'column' : 'row'
           }}>
-            <div style={{width: '100%'}}>
-              <h2 style={getStyle(sectionTitleStyle, mobileStyles.sectionTitleStyle)} className="section-title">
+            <div style={{width: '100%', textAlign: 'center'}}>
+              <h2 style={getStyle(sectionTitleStyle, mobileStyles.sectionTitleStyle)}>
                 {language === 'ua' ? 'Майбутні події' : 'Upcoming Events'}
               </h2>
               <p style={getStyle(
-                  {...sectionSubtitleStyle, textAlign: 'left', margin: '0', paddingLeft: '1rem', marginBottom: '0'},
-                  {...mobileStyles.sectionSubtitleStyle, paddingLeft: '1rem', textAlign: 'left'}
+                  {...sectionSubtitleStyle, margin: '0', marginBottom: '0'},
+                  {...mobileStyles.sectionSubtitleStyle}
               )}>
                 {language === 'ua' 
                   ? 'Не пропустіть найцікавіше' 
@@ -1155,22 +1244,19 @@ const Home = () => {
               </p>
             </div>
 
-             {/* Кнопки навігації (Desktop) */}
             {!isMobile && (
-              <div style={{display: 'flex', gap: '1rem', paddingRight: '1rem'}}>
+              <div style={{display: 'flex', gap: '1rem', paddingRight: '1rem', position: 'absolute', right: '10%'}}>
                 <button 
                   onClick={() => scrollSlider(eventsSliderRef, 'left')} 
+                  className="slider-nav-btn"
                   style={sliderNavButtonStyle('#ed008c')}
-                  onMouseEnter={e => {e.target.style.background = '#ed008c'; e.target.style.color = '#fff'}}
-                  onMouseLeave={e => {e.target.style.background = 'rgba(255,255,255,0.9)'; e.target.style.color = '#ed008c'}}
                 >
                   <ArrowIcon direction="left" />
                 </button>
                 <button 
                   onClick={() => scrollSlider(eventsSliderRef, 'right')} 
+                  className="slider-nav-btn"
                   style={sliderNavButtonStyle('#ed008c')}
-                  onMouseEnter={e => {e.target.style.background = '#ed008c'; e.target.style.color = '#fff'}}
-                  onMouseLeave={e => {e.target.style.background = 'rgba(255,255,255,0.9)'; e.target.style.color = '#ed008c'}}
                 >
                   <ArrowIcon direction="right" />
                 </button>
@@ -1178,7 +1264,6 @@ const Home = () => {
             )}
           </div>
 
-          {/* Слайдер подій */}
           <div 
             ref={eventsSliderRef} 
             style={{
@@ -1188,40 +1273,15 @@ const Home = () => {
           >
             {upcomingEvents.map(event => (
               <div key={event.id} style={getStyle(sliderCardWrapperStyle, mobileStyles.sliderCardWrapperStyle)}>
-                <div 
-                  style={createCardStyle(event.color)}
-                  onMouseEnter={(e) => {
-                    if (!isMobile) {
-                      e.currentTarget.style.transform = 'translateY(-5px)';
-                      e.currentTarget.style.boxShadow = `0 10px 25px ${event.color}50`;
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!isMobile) {
-                      e.currentTarget.style.transform = 'translateY(0)';
-                      e.currentTarget.style.boxShadow = '0 5px 20px rgba(0,0,0,0.08)';
-                    }
-                  }}
-                >
-                  <img src={event.image} alt={event.title} style={cardImageStyle} />
+                <div style={createCardStyle(event.color)}>
+                  <img src={event.image} alt={event.title} style={cardImageStyle} draggable={false} />
                   <div style={cardContentStyle}>
                     <div>
                       <span style={{...cardDateStyle, color: event.color}}>{event.date}</span>
                       <h4 style={cardTitleStyle}>{event.title}</h4>
                       <p style={cardTextStyle}>{event.description}</p>
                     </div>
-                    <Link 
-                      to="/events" 
-                      style={createReadMoreStyle(event.color)}
-                      onMouseEnter={(e) => {
-                        e.target.style.background = event.color;
-                        e.target.style.color = '#ffffff';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.target.style.background = 'transparent';
-                        e.target.style.color = event.color;
-                      }}
-                    >
+                    <Link to="/events" className="animated-btn" style={createReadMoreStyle(event.color)}>
                       {language === 'ua' ? 'Дізнатися більше' : 'Learn More'}
                     </Link>
                   </div>
@@ -1230,19 +1290,12 @@ const Home = () => {
             ))}
           </div>
           
-          {/* Кнопки навігації (Мобільна версія - знизу по центру) */}
           {isMobile && (
             <div style={{display: 'flex', gap: '1rem', justifyContent: 'center', marginTop: '1rem', marginBottom: '1.5rem'}}>
-                <button 
-                  onClick={() => scrollSlider(eventsSliderRef, 'left')} 
-                  style={sliderNavButtonStyle('#ed008c')}
-                >
+                <button onClick={() => scrollSlider(eventsSliderRef, 'left')} className="slider-nav-btn" style={sliderNavButtonStyle('#ed008c')}>
                   <ArrowIcon direction="left" />
                 </button>
-                <button 
-                  onClick={() => scrollSlider(eventsSliderRef, 'right')} 
-                  style={sliderNavButtonStyle('#ed008c')}
-                >
+                <button onClick={() => scrollSlider(eventsSliderRef, 'right')} className="slider-nav-btn" style={sliderNavButtonStyle('#ed008c')}>
                   <ArrowIcon direction="right" />
                 </button>
             </div>
@@ -1251,18 +1304,8 @@ const Home = () => {
           <div style={{textAlign: 'center', marginTop: '1rem'}}>
             <Link 
               to="/events" 
+              className="animated-btn"
               style={createViewAllButtonStyle('#ed008c')}
-              className="cta-button"
-              onMouseEnter={(e) => {
-                e.target.style.background = '#d9007a';
-                e.target.style.transform = 'translateY(-2px)';
-                e.target.style.boxShadow = '0 6px 20px rgba(237, 0, 140, 0.3)';
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.background = '#ed008c';
-                e.target.style.transform = 'translateY(0)';
-                e.target.style.boxShadow = 'none';
-              }}
             >
               {language === 'ua' ? 'Переглянути всі події' : 'View All Events'}
             </Link>
@@ -1291,30 +1334,11 @@ const Home = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 style={getStyle(inputStyle, mobileStyles.inputStyle)}
-                onFocus={(e) => {
-                  e.target.style.borderColor = '#2e3192';
-                  e.target.style.boxShadow = '0 5px 20px rgba(46, 49, 146, 0.15)';
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor = 'rgba(255, 255, 255, 0.3)';
-                  e.target.style.boxShadow = '0 5px 15px rgba(0,0,0,0.2)';
-                }}
               />
               <button 
                 type="submit" 
+                className="animated-btn"
                 style={getStyle(subscribeButtonStyle, mobileStyles.subscribeButtonStyle)}
-                onMouseEnter={(e) => {
-                  e.target.style.background = '#ffffff';
-                  e.target.style.color = '#1a1f6b';
-                  e.target.style.transform = 'translateY(-3px)';
-                  e.target.style.boxShadow = '0 8px 25px rgba(255, 255, 255, 0.3)';
-                }}
-                onMouseLeave={(e) => {
-                  e.target.style.background = 'rgba(255, 255, 255, 0.95)';
-                  e.target.style.color = '#2e3192';
-                  e.target.style.transform = 'translateY(0)';
-                  e.target.style.boxShadow = '0 5px 20px rgba(0, 0, 0, 0.2)';
-                }}
               >
                 {language === 'ua' ? 'Підписатися' : 'Subscribe'}
               </button>
@@ -1328,12 +1352,12 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Кнопка скролу вгору */}
+      {/* Кнопка скролу вгору (ОНОВЛЕНА) */}
       <button 
         style={scrollTopButtonStyle} 
+        className="scroll-top-btn"
         onClick={scrollToTop}
-        onMouseEnter={(e) => e.target.style.transform = 'scale(1.1)'}
-        onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
+        aria-label="Scroll to top"
       >
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
           <path d="M18 15l-6-6-6 6"/>

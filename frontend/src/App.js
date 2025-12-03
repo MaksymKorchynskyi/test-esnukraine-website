@@ -11,6 +11,7 @@ import About from './pages/About';
 import Sections from './pages/Sections';
 import News from './pages/News';
 import Events from './pages/Events';
+import VoicesOfCourage from './pages/VoicesOfCourage';
 
 // Глобальні стилі
 const globalStyles = `
@@ -92,6 +93,7 @@ function App() {
               <Route path="/about" element={<About />} />
               <Route path="/sections" element={<Sections />} />
               <Route path="/news" element={<News />} />
+              <Route path="/news/voices-of-courage" element={<VoicesOfCourage />} />
               <Route path="/events" element={<Events />} />
             </Routes>
           </main>
